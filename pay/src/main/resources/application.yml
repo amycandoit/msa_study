@@ -1,0 +1,20 @@
+server:
+  port: 0
+jwt:
+  secret:
+spring:
+  application:
+    name: pay-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/pay?serverTimezone=Asia/Seoul
+    username: root
+    password: 1q2w3e4r!!
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+eureka:
+  instance:
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+

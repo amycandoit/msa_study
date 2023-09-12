@@ -1,0 +1,70 @@
+server:
+  port: 8000
+jwt:
+  secret:
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      default-filters:
+        - name: "CustomGlobalFilter"
+          args:
+            logging: "true"
+        - name: CacheFilter
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders : "*"
+      routes:
+        - id: auth-service
+          uri: "lb://AUTH-SERVICE"
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: ceo-service
+          uri: "lb://CEO-SERVICE"
+          predicates :
+            - Path=/api/v1/owner/**
+          filters:
+            - name: "TokenFilter"
+              args:
+                logging: false
+
+        - id: menu-service
+          uri: "lb://MENU-SERVICE"
+          predicates:
+            - Path=/api/v1/menu/**
+
+        - id: store-service
+          uri: "lb://STORE-SERVICE"
+          predicates:
+            - Path=/api/v1/store/**
+
+        - id: customer-service
+          uri: "lb://CUSTOMER-SERVICE"
+          predicates:
+            - Path=/api/v1/customer/**
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,beans,refresh
+
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka
+eureka:
+  instance:
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
