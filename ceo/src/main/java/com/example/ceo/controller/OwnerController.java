@@ -15,11 +15,11 @@ import java.util.UUID;
 public class OwnerController {
     private final OwnerService ownerService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void postOwner(@RequestBody OwnerRequest ownerRequest) {
-        ownerService.ownerSave(ownerRequest);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public void postOwner(@RequestBody OwnerRequest ownerRequest) {
+//        ownerService.ownerSave(ownerRequest);
+//    }
 
     @GetMapping("/{ownerId}")
     public OwnerResponse getById(@PathVariable UUID ownerId) {

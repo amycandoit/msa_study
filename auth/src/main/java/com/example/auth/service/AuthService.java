@@ -9,6 +9,8 @@ import com.example.auth.domain.entity.User;
 import com.example.auth.domain.request.LoginRequest;
 import com.example.auth.domain.request.SignupRequest;
 import com.example.auth.domain.response.LoginResponse;
+import com.example.auth.kafka.CustomerProducer;
+import com.example.auth.kafka.OwnerProducer;
 import com.example.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,8 +29,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RestTemplate restTemplate;
-    private final OwnerClient ownerClient;
-    private final CustomerClient customerClient;
+    //    private final OwnerClient ownerClient;
+    private final OwnerProducer ownerProducer;
+    //    private final CustomerClient customerClient;
+    private final CustomerProducer customerProducer;
 
     @Transactional
     public void signUp(SignupRequest signupRequest) {
@@ -42,19 +46,21 @@ public class AuthService {
         User save = userRepository.save(build);
         OwnerRequest ownerRequest = new OwnerRequest(save.getId(), save.getName(), save.getNumber());
         if (save.getRole() == Role.OWNER) {
-            ResponseEntity<Void> response = ownerClient.saveOwner(ownerRequest);
+            ownerProducer.send(ownerRequest);
+//            ResponseEntity<Void> response = ownerClient.saveOwner(ownerRequest);
 //            ResponseEntity<Void> response = restTemplate.postForEntity("http://localhost:9001/api/v1/owner",
 //                    new OwnerRequest(save.getId(), save.getName(), save.getNumber()), Void.class);
-            if (response.getStatusCode() != HttpStatus.CREATED) {
-                String err = save.getRole().name() + "-SERVICE DEAD";
-                throw new RuntimeException(err);
-            }
+//            if (response.getStatusCode() != HttpStatus.CREATED) {
+//                String err = save.getRole().name() + "-SERVICE DEAD";
+//                throw new RuntimeException(err);
+//            }
         } else {
-            ResponseEntity<Void> response = customerClient.saveCustomer(ownerRequest);
-            if (response.getStatusCode() != HttpStatus.CREATED) {
-                String err = save.getRole().name() + "-SERVICE DEAD";
-                throw new RuntimeException(err);
-            }
+            customerProducer.send(ownerRequest);
+//            ResponseEntity<Void> response = customerClient.saveCustomer(ownerRequest);
+//            if (response.getStatusCode() != HttpStatus.CREATED) {
+//                String err = save.getRole().name() + "-SERVICE DEAD";
+//                throw new RuntimeException(err);
+//            }
         }
     }
 

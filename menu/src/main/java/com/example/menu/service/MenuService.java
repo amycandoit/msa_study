@@ -28,7 +28,7 @@ public class MenuService {
                 pageRequest);
     }
 
-    public List<MenuResponse> getBtIds(List<Long> ids) {
+    public List<MenuResponse> getByIds(List<Long> ids) {
         List<Menu> menus = menuRepository.findByIdIn(ids);
         return menus.stream().map(MenuResponse::of).toList();
     }

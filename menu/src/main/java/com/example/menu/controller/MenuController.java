@@ -34,6 +34,6 @@ public class MenuController {
 
     @GetMapping("ids")
     public List<MenuResponse> getAllByIds(@RequestParam(name = "ids") List<Long> ids) {
-        return menuService.getBtIds(ids);
+        return menuService.getByIds(ids);
     }
 }
